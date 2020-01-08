@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 	 fs::path inputFilePath = PKD::CommandLineOptions::input_file(argc, argv).value_or(
 	 "test.pdb");
 	 */
-	filesystem::path inputFilePath("1yve.pdb");
+	filesystem::path inputFilePath("2cab.pdb");
 	string inputFileExtension = inputFilePath.extension().string();
 	string inputFileStem = inputFilePath.stem().string();
 
