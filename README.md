@@ -5,16 +5,16 @@ The repository "protein-knot-analyzer" is the full graphical program used for PD
 
 # Demo
 In Faísca's paper, it was shown that in protein CAB (PDB ID: 2cab) there is a superficial knot. The protein viewed as a ribbon in UCSF Chimera is shown below:
-![2cab_ribbon](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cam_ribbon.jpg?raw=true)
+![2cab_ribbon](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_ribbon.jpg?raw=true)
 
 After decomposing the protein model into only a string of the alpha carbons:
-![2cab_backbone-wire-iteration-0](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cam_backbone-wire-iteration-1.jpg?raw=true)
+![2cab_backbone-wire-iteration-0](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_backbone-wire-iteration-1.jpg?raw=true)
 
 After running Taylor's knot algorithm 50 iterations:
-![2cab_backbone-wire-iteration-0](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cam_backbone-wire-iteration-1.jpg?raw=true)
+![2cab_backbone-wire-iteration-1](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_backbone-wire-iteration-1.jpg?raw=true)
 
 After running Taylor's knot algorithm 1000 iterations:
-![2cab_backbone-wire-iteration-0](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cam_backbone-wire-iteration-2.jpg?raw=true)
+![2cab_backbone-wire-iteration-20](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_backbone-wire-iteration-20.jpg?raw=true)
 
 # Libraries Used:
 * MMDB, a macromolecular coordinate library
@@ -30,4 +30,3 @@ Comput. Struct. Biotechnol. J. 13, 459–468 (2015)
 3. M. D. Winn et al. Acta. Cryst. D67, 235-242 (2011)
 "Overview of the CCP4 suite and current developments"
 [ doi:10.1107/S0907444910045749 ]
-4. 
