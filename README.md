@@ -8,7 +8,7 @@ In Faísca's paper, it was shown that in protein CAB (PDB ID: 2cab) there is a s
 ![2cab_ribbon](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_ribbon.jpg?raw=true)
 
 After decomposing the protein model into only a string of the alpha carbons:
-![2cab_backbone-wire-iteration-0](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_backbone-wire-iteration-1.jpg?raw=true)
+![2cab_backbone-wire-iteration-0](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_backbone-wire-iteration-0.jpg?raw=true)
 
 After running Taylor's knot algorithm 50 iterations:
 ![2cab_backbone-wire-iteration-1](https://github.com/bradosia/protein-knot-analyzer/blob/master/share/report/2cab_backbone-wire-iteration-1.jpg?raw=true)
