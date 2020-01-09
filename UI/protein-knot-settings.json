@@ -1,0 +1,10 @@
+{ 
+ "inputFile" : "2cab.pdb",
+ "batchNum" : 30,
+ "smoothNumPerBatch" : 10,
+ "smoothStraightenCollinear" : true,
+ "exportSTEP_EachBatch" : false,
+ "exportSTEP_AtBatch" : [1,18,19,20,21,22,23,24,25,26,27,28,29,30],
+ "exportSTEP_Name" : "_test1_",
+ "exportSTEP_IntervalNumWidth" : 6
+}
