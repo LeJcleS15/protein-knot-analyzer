@@ -2,7 +2,7 @@
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.release.1936831968">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.release.1936831968" moduleId="org.eclipse.cdt.core.settings" name="commandLine">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.release.1936831968" moduleId="org.eclipse.cdt.core.settings" name="UI">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.PE64" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -12,7 +12,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.exe.release.1936831968" name="commandLine" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="cdt.managedbuild.config.gnu.mingw.exe.release">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.exe.release.1936831968" name="UI" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.mingw.exe.release">
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.release.1936831968." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.exe.release.223659879" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.exe.release">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.exe.release.706793934" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.exe.release"/>
@@ -27,9 +27,11 @@
 								<option id="gnu.cpp.compiler.option.dialect.std.934713128" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.473087133" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++17" valueType="string"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1106650466" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/include/mmdb}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/include/OCCT}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/third_party/OCCT}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/third_party/aconf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/third_party/mmdb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/protein-knot-analyzer/third_party}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.884681127" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -81,7 +83,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src_UI"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="third_party/goo"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
