@@ -324,7 +324,10 @@ int main(int argc, char **argv) {
 		 * affect performance.
 		 */
 		printf("Running Taylor Knot Algorithm: Smooth #%d\n", i);
+		std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 		taylorAlgorithm.smooth(nSmooth, isSmoothStraightenCollinear);
+		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+		std::cout << "Time difference = " << std::setw(6) << std::setfill('0') << std::chrono::duration_cast<std::chrono::milliseconds> (end - begin).count() << "[ms]" << std::endl;
 #ifdef IS_ANALYZER
 		/*
 		 * Export STEP file at batch iteration

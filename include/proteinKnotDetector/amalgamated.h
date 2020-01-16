@@ -52,13 +52,13 @@ public:
 	 * 1D array is used instead of a 2D array to guarantee contiguous
 	 * memory is used, so the algorithm will run faster.
 	 */
-	float *m;
+	double *m;
 	std::size_t n;
 	std::size_t s;
 	DoubleMatrix(std::size_t size) {
 		s = size;
 		n = s * 3;
-		m = new float[n];
+		m = new double[n];
 	}
 	DoubleMatrix(const DoubleMatrix&) = delete;
 	DoubleMatrix& operator=(const DoubleMatrix&) = delete;

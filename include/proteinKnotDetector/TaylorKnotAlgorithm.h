@@ -19,6 +19,7 @@
 #include <iostream>
 #include <optional>
 #include <memory>
+#include <limits>
 
 // c
 #include <stdio.h>
@@ -31,6 +32,83 @@
  */
 namespace PKD {
 
+// Copyright (C) 2016 by Doug Baldwin.
+// This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International
+// License (http://creativecommons.org/licenses/by-sa/4.0/).
+// High and low bounds on t values that are considered to represent a ray intersecting
+// a triangle's plane.
+#define tFar   10000.0f
+#define tNear  0.0000001f
+constexpr double lowest_double = std::numeric_limits<double>::lowest();
+/* CROSS, DOT, and SUB3 Macros for 3-component vectors
+ * used in original Moeller and Trumbore algorithm.
+ *
+ * Citation for macros from Moeller and Trumbore's original code
+ * Created on: 1997
+ * 		Author: Tomas Moeller -- Chalmers University of Technology
+ * 		& Ben Trumbore -- Cornell University
+ * 		Title:  Fast, Minimum Storage Ray /Triangle Intersection
+ * 		Source: http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
+ */
+#define CROSS(res, v1, v2)\
+		res[0]=v1[1]*v2[2]-v1[2]*v2[1];\
+		res[1]=v1[2]*v2[0]-v1[0]*v2[2];\
+		res[2]=v1[0]*v2[1]-v1[1]*v2[0];
+#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
+#define SUB3(res,v1,v2)\
+		res[0]=v1[0]-v2[0];\
+		res[1]=v1[1]-v2[1];\
+		res[2]=v1[2]-v2[2];
+inline bool MollerTrumboreRayTriangleIntersection(double *v0, double *v1,
+		double *v2, double *rayOrigin, double *rayDirection) {
+#ifdef TAYLOR_SMOOTH_DEBUG_INTERSECT
+				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH
+						&& k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
+					printf(
+							"TRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} TEST\n",
+							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
+							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
+							rayOrigin[2], rayDirection[0], rayDirection[1],
+							rayDirection[2]);
+				}
+#endif
+	double v0v1[3]; // Find vectors for two edges sharing vertex 0
+	SUB3(v0v1, v1, v0);
+	double v0v2[3];
+	SUB3(v0v2, v2, v0);
+	double pvec[3]; // Begin calculating determinant;
+	CROSS(pvec, rayDirection, v0v2); // also used to calculate U parameter
+	const double det = DOT(v0v1, pvec); // If determinant is near zero, ray lies in plane of triangle
+	if (det > -1 * lowest_double && det < lowest_double) // Ray is parallel to this triangle.
+		return false;
+	const double inv_det = 1.0f / det;
+	double tvec[3]; // Calculate vector from vertex to ray origin
+	SUB3(tvec, rayOrigin, v0);
+	const double u = DOT(tvec, pvec) * inv_det; // Calculate U parameter and test bounds
+	if (u < 0.0f || u > 1.0f)
+		return false;
+	double qvec[3]; // Prepare to test V parameter
+	CROSS(qvec, tvec, v0v1);
+	const double v = DOT(rayDirection, qvec) * inv_det; // Calculate V parameter and test bounds
+	if (v < 0.0f || u + v >= 1.0f)
+		return false;
+	//const double t = DOT(edge2, qvec) * inv_det; // Calculate t, final check to see if ray intersects triangle. Test to
+	//if (t <= lowest_double || t >= 1-lowest_double) // see if t > tFar added for consistency with other algorithms in experiment.
+	//	return false;
+	// intersection found, don't move vertex
+#ifdef TAYLOR_SMOOTH_DEBUG_INTERSECT
+				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH
+						&& k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
+					printf(
+							"TRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} INTERSECTION\n",
+							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
+							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
+							rayOrigin[2], rayDirection[0], rayDirection[1],
+							rayDirection[2]);
+				}
+#endif
+	return true;
+}
 
 /*
  * William R. Taylor Knot Detection Algorithm
@@ -55,44 +133,16 @@ void TaylorKnotAlgorithm::setMatrix(std::unique_ptr<DoubleMatrix> matrixPtr) {
 	m = std::move(matrixPtr);
 }
 
-//#define TAYLOR_SMOOTH_DEBUG // show vertex info at each computation
-//#define TAYLOR_SMOOTH_DEBUG_INTERSECT
-#define TAYLOR_SMOOTH_DEBUG_DEPTH 12
-// Copyright (C) 2016 by Doug Baldwin.
-// This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International
-// License (http://creativecommons.org/licenses/by-sa/4.0/).
-// High and low bounds on t values that are considered to represent a ray intersecting
-// a triangle's plane.
-#define tFar   10000.0f
-#define tNear  0.0000001f
-/* CROSS, DOT, and SUB3 Macros for 3-component vectors
- * used in original Moeller and Trumbore algorithm.
- *
- * Citation for macros from Moeller and Trumbore's original code
- * Created on: 1997
- * 		Author: Tomas Moeller -- Chalmers University of Technology
- * 		& Ben Trumbore -- Cornell University
- * 		Title:  Fast, Minimum Storage Ray /Triangle Intersection
- * 		Source: http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
- */
-#define CROSS(res, v1, v2)\
-		res[0]=v1[1]*v2[2]-v1[2]*v2[1];\
-		res[1]=v1[2]*v2[0]-v1[0]*v2[2];\
-		res[2]=v1[0]*v2[1]-v1[1]*v2[0];
-#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-#define SUB3(res,v1,v2)\
-		res[0]=v1[0]-v2[0];\
-		res[1]=v1[1]-v2[1];\
-		res[2]=v1[2]-v2[2];
 /*
  * CRITICAL ALGORITHM
  * Function calls would create too much overhead so we use #define
  * for maximum computational efficiency
  */
-void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraightenCollinear = true) {
-	float *x = m->m; // x is an alias for the vertex matrix
-	float *v0, *v1, *v2, *v0a, *v1a, *v2a, *rayOrigin, *rayDirection;
-	float v1p[3];
+void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1,
+		bool isSmoothStraightenCollinear = true) {
+	double *x = m->m; // x is an alias for the vertex matrix
+	double *v0, *v1, *v2, *v0a, *v1a, *v2a, *rayOrigin, *rayDirection;
+	double v1p[3];
 	/* v# are the operated vertexes
 	 * v#a are the committed vertexes
 	 * v#p are the prime vertexes (vertex after move)
@@ -118,10 +168,6 @@ void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraight
 			 * did not intersect any line segment {j'-1;j'}(j<i) before the move point
 			 * or any line {j;j+1}(j>i) following.
 			 * implemented with the Möller–Trumbore intersection algorithm
-			 *
-			 * This code is repeated 4 times to check intersection for each of two triangles twice.
-			 * Creating a function for this repeated code would create too much of an overhead
-			 * so the code is just copied and pasted 4 times.
 			 */
 			// triangle {i'-1,i,i'} and line {j'-1;j'}(j<i)
 			v0 = v0a;
@@ -133,50 +179,16 @@ void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraight
 #ifdef TAYLOR_SMOOTH_DEBUG
 				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH && k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
 					printf(
-							"i#%d k#%d triangle {i'-1,i,i'} and line {j'-1;j'}(j<i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
+							"i#%d k#%d triangle {i'-1,i,i'} and line {j'-1;j'}(j<i)\n",
+							i, k);
 				}
 #endif
-				float edge1[3]; // Find vectors for two edges sharing vertex 0
-				SUB3(edge1, v1, v0);
-				float edge2[3];
-				SUB3(edge2, v2, v0);
-				float pvec[3]; // Begin calculating determinant;
-				CROSS(pvec, rayDirection, edge2); // also used to calculate U parameter
-				const float det = DOT(edge1, pvec); // If determinant is near zero, ray lies in plane of triangle
-				if (det > -0.000001f && det < 0.000001f) // No backface culling in this experiment, determinant within "epsilon" as
-					continue; // defined in M&T paper is considered 0
-				const float inv_det = 1.0f / det;
-				float tvec[3]; // Calculate vector from vertex to ray origin
-				SUB3(tvec, rayOrigin, v0);
-				const float u = DOT( tvec, pvec) * inv_det; // Calculate U parameter and test bounds
-				if (u < 0.0f || u > 1.0f)
+				if (MollerTrumboreRayTriangleIntersection(v0, v1, v2, rayOrigin,
+						rayDirection)) {
+					goto intersect;
+				} else {
 					continue;
-				float qvec[3]; // Prepare to test V parameter
-				CROSS(qvec, tvec, edge1);
-				const float v = DOT( rayDirection, qvec ) * inv_det; // Calculate V parameter and test bounds
-				if (v < 0.0f || u + v >= 1.0f)
-					continue;
-				const float t = DOT( edge2, qvec ) * inv_det; // Calculate t, final check to see if ray intersects triangle. Test to
-				if (t <= tNear || t >= tFar) // see if t > tFar added for consistency with other algorithms in experiment.
-					continue;
-				// intersection found, don't move vertex
-#ifdef TAYLOR_SMOOTH_DEBUG_INTERSECT
-				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH
-						&& k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
-					printf(
-							"i#%d k#%d triangle {i'-1,i,i'} and line {j'-1;j'}(j<i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
 				}
-#endif
-				goto intersect;
-				break; // we won't reach this break but it's here anyway
 			}
 			// triangle {i;i';i+1} and line {j'-1;j'}(j<i)
 			v0 = v1a;
@@ -188,49 +200,16 @@ void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraight
 #ifdef TAYLOR_SMOOTH_DEBUG
 				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH && k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
 					printf(
-							"i#%d k#%d triangle {i;i';i+1} and line {j'-1;j'}(j<i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
+							"i#%d k#%d triangle {i;i';i+1} and line {j'-1;j'}(j<i)\n",
+							i, k);
 				}
 #endif
-				float edge1[3];
-				SUB3(edge1, v1, v0);
-				float edge2[3];
-				SUB3(edge2, v2, v0);
-				float pvec[3];
-				CROSS(pvec, rayDirection, edge2);
-				const float det = DOT(edge1, pvec);
-				if (det > -0.000001f && det < 0.000001f)
+				if (MollerTrumboreRayTriangleIntersection(v0, v1, v2, rayOrigin,
+						rayDirection)) {
+					goto intersect;
+				} else {
 					continue;
-				const float inv_det = 1.0f / det;
-				float tvec[3];
-				SUB3(tvec, rayOrigin, v0);
-				const float u = DOT( tvec, pvec) * inv_det;
-				if (u < 0.0f || u > 1.0f)
-					continue;
-				float qvec[3];
-				CROSS(qvec, tvec, edge1);
-				const float v = DOT( rayDirection, qvec ) * inv_det;
-				if (v < 0.0f || u + v >= 1.0f)
-					continue;
-				const float t = DOT( edge2, qvec ) * inv_det;
-				if (t <= tNear || t >= tFar)
-					continue;
-#ifdef TAYLOR_SMOOTH_DEBUG_INTERSECT
-				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH
-						&& k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
-					printf(
-							"i#%d k#%d triangle {i;i';i+1} and line {j'-1;j'}(j<i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
 				}
-#endif
-				goto intersect;
-				break;
 			}
 			// triangle {i'-1,i,i'} and line {j;j+1}(j>i)
 			v0 = v0a;
@@ -242,49 +221,16 @@ void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraight
 #ifdef TAYLOR_SMOOTH_DEBUG
 				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH && k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
 					printf(
-							"i#%d k#%d triangle {i'-1,i,i'} and line {j;j+1}(j>i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
+							"i#%d k#%d triangle {i'-1,i,i'} and line {j;j+1}(j>i)\n",
+							i, k);
 				}
 #endif
-				float edge1[3];
-				SUB3(edge1, v1, v0);
-				float edge2[3];
-				SUB3(edge2, v2, v0);
-				float pvec[3];
-				CROSS(pvec, rayDirection, edge2);
-				const float det = DOT(edge1, pvec);
-				if (det > -0.000001f && det < 0.000001f)
+				if (MollerTrumboreRayTriangleIntersection(v0, v1, v2, rayOrigin,
+						rayDirection)) {
+					goto intersect;
+				} else {
 					continue;
-				const float inv_det = 1.0f / det;
-				float tvec[3];
-				SUB3(tvec, rayOrigin, v0);
-				const float u = DOT( tvec, pvec) * inv_det;
-				if (u < 0.0f || u > 1.0f)
-					continue;
-				float qvec[3];
-				CROSS(qvec, tvec, edge1);
-				const float v = DOT( rayDirection, qvec ) * inv_det;
-				if (v < 0.0f || u + v >= 1.0f)
-					continue;
-				const float t = DOT( edge2, qvec ) * inv_det;
-				if (t <= tNear || t >= tFar)
-					continue;
-#ifdef TAYLOR_SMOOTH_DEBUG_INTERSECT
-				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH
-						&& k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
-					printf(
-							"i#%d k#%d triangle {i'-1,i,i'} and line {j;j+1}(j>i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
 				}
-#endif
-				goto intersect;
-				break;
 			}
 			// triangle {i;i';i+1} and line {j;j+1}(j>i)
 			v0 = v1a;
@@ -296,49 +242,16 @@ void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraight
 #ifdef TAYLOR_SMOOTH_DEBUG
 				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH && k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
 					printf(
-							"i#%d k#%d triangle {i;i';i+1} and line {j;j+1}(j>i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
+							"i#%d k#%d triangle {i;i';i+1} and line {j;j+1}(j>i)\n",
+							i, k);
 				}
 #endif
-				float edge1[3];
-				SUB3(edge1, v1, v0);
-				float edge2[3];
-				SUB3(edge2, v2, v0);
-				float pvec[3];
-				CROSS(pvec, rayDirection, edge2);
-				const float det = DOT(edge1, pvec);
-				if (det > -0.000001f && det < 0.000001f)
+				if (MollerTrumboreRayTriangleIntersection(v0, v1, v2, rayOrigin,
+						rayDirection)) {
+					goto intersect;
+				} else {
 					continue;
-				const float inv_det = 1.0f / det;
-				float tvec[3];
-				SUB3(tvec, rayOrigin, v0);
-				const float u = DOT( tvec, pvec) * inv_det;
-				if (u < 0.0f || u > 1.0f)
-					continue;
-				float qvec[3];
-				CROSS(qvec, tvec, edge1);
-				const float v = DOT( rayDirection, qvec ) * inv_det;
-				if (v < 0.0f || u + v >= 1.0f)
-					continue;
-				const float t = DOT( edge2, qvec ) * inv_det;
-				if (t <= tNear || t >= tFar)
-					continue;
-#ifdef TAYLOR_SMOOTH_DEBUG_INTERSECT
-				if (i < TAYLOR_SMOOTH_DEBUG_DEPTH
-						&& k < TAYLOR_SMOOTH_DEBUG_DEPTH) {
-					printf(
-							"i#%d k#%d triangle {i;i';i+1} and line {j;j+1}(j>i)\nTRI{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)} line{(%.2f,%.2f,%.2f);(%.2f,%.2f,%.2f)}\n",
-							i, k, v0[0], v0[1], v0[2], v1[0], v1[1], v1[2],
-							v2[0], v2[1], v2[2], rayOrigin[0], rayOrigin[1],
-							rayOrigin[2], rayDirection[0], rayDirection[1],
-							rayDirection[2]);
 				}
-#endif
-				goto intersect;
-				break;
 			}
 			// both triangles don't intersect, commit vertex move
 			v1a[0] = v1p[0];
@@ -365,6 +278,7 @@ void TaylorKnotAlgorithm::smooth(unsigned int nRepeat = 1, bool isSmoothStraight
 		}
 	}
 }
+
 void TaylorKnotAlgorithm::smoothAuto() {
 
 }
