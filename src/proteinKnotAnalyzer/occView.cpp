@@ -26,10 +26,10 @@ OccView::OccView(QWidget *parent)
   // Enable the mouse tracking, by default the mouse tracking is disabled.
   setMouseTracking(true);
 
-  mOpenGLContext = new QOpenGLContext(this);
+  //mOpenGLContext = new QOpenGLContext(this);
   //QSurfaceFormat format = requestedFormat();
   //mOpenGLContext->setScreen(this->screen);
-  mOpenGLContext->create();
+  //mOpenGLContext->create();
 }
 
 void OccView::init() {
@@ -220,7 +220,6 @@ void OccView::onMouseMove(const int theFlags, const QPoint thePoint) {
   // Draw the rubber band.
   if (theFlags & Qt::LeftButton) {
 
-    printf("Xmin: %f, myYmin: %f", myXmin, myYmin);
     drawRubberBand(myXmin, myYmin, thePoint.x(), thePoint.y());
 
     dragEvent(thePoint.x(), thePoint.y());

@@ -378,10 +378,14 @@ void MainWindow::on_actionOpen_triggered() {
 
 void MainWindow::on_actionAbout_triggered() {
   QMessageBox::about(
-      this, tr("About occQt"),
-      tr("<h2>occQt 2.0</h2>"
+      this, tr("About Protein Knot Analyzer"),
+      tr("<h2>Protein Knot Analyzer 1.0</h2><p>Author: Brad Lee<p>Framework of QT5 and OCC:"
          "<p>Copyright &copy; 2014 eryar@163.com"
-         "<p>occQt is a demo applicaton about Qt and OpenCASCADE."));
+         "Icons made by <a "
+         "href=\"https://www.flaticon.com/authors/pixel-perfect\" "
+         "title=\"Pixel perfect\">Pixel perfect</a> from <a "
+         "href=\"https://www.flaticon.com/\" title=\"Flaticon\"> "
+         "www.flaticon.com</a>"));
 }
 
 void MainWindow::on_actionBox_triggered() {
@@ -894,12 +898,12 @@ void MainWindow::makeToroidalHelix() {
   }
 }
 
-void MainWindow::on_actionZoom_triggered() {}
+void MainWindow::on_actionZoom_triggered() { myOccView->zoom(); }
 
-void MainWindow::on_actionPan_triggered() {}
+void MainWindow::on_actionPan_triggered() { myOccView->pan(); }
 
-void MainWindow::on_actionRotate_triggered() {}
+void MainWindow::on_actionRotate_triggered() { myOccView->rotate(); }
 
-void MainWindow::on_actionReset_triggered() {}
+void MainWindow::on_actionReset_triggered() { myOccView->reset(); }
 
-void MainWindow::on_actionFitAll_triggered() {}
+void MainWindow::on_actionFitAll_triggered() { myOccView->fitAll(); }

@@ -20,5 +20,6 @@
         <file>icons_cad/loft.png</file>
         <file>icons_cad/revolve.png</file>
         <file>icons_cad/helix.png</file>
+        <file>icons_cad/click.svg</file>
     </qresource>
 </RCC>
