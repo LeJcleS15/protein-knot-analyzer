@@ -1,17 +1,24 @@
 /*
- * Name        : Protein Knot Detector
- * Author      : Brad Lee
- * Version     : 1.00
- * License     : GNU LGPL v3
- * Description : Detects knots
+ * @name Protein Knot Detector
+ * @author Brad Lee
+ * @version 1.00
+ * @license GNU LGPL v3
+ * @brief Core command line interface tools for detecting protein knots.
+ * @details A library providing the core tools for detecting protein knots meant
+ * for the command line interface.
  *
  * Works Cited:
  * Taylor, W. A deeply knotted protein structure and how it might fold.
- * Nature 406, 916–919 (2000) doi:10.1038/35022623
+ * Nature 406, 916â€“919 (2000) doi:10.1038/35022623
  */
 
 #ifndef PKD_AMALGAMATED_H
 #define PKD_AMALGAMATED_H
+
+/*
+ * Configuration
+ */
+#include <proteinKnotDetector/config.h>
 
 // c++17
 #include <string>
@@ -23,19 +30,6 @@
 // c
 #include <stdio.h>
 #include <string.h>
-
-#ifdef IS_ANALYZER
-/* mmdb 1.25.6.1
- * MMDB is a macromolecular coordinate library,
- * written by Eugene Krissinel primarily for use by CCP4 group.
- * The Coordinate Library is designed to assist CCP4 developers in working with coordinate files.
- * The Library features work with the primary file formats of the Protein Data Bank (PDB),
- * the PDB file format and the mmCIF file format
- * License: GNU LGPL v3
- * Documentation: https://www.ebi.ac.uk/pdbe/docs/cldoc/object/cl_object.html
- */
-#include <mmdb_manager.h>
-#endif
 
 /*
  * PKD = Protein Knot Detector
@@ -77,9 +71,6 @@ public:
  */
 class Protein {
 public:
-#ifdef IS_ANALYZER
-	std::unique_ptr<CMMDBManager> MMDB;
-#endif
 	std::unordered_map<std::string, std::unique_ptr<DoubleMatrix>> carbonAlphaMatrixMap;
 	/* 0: Unknown
 	 * 1: MMDB
