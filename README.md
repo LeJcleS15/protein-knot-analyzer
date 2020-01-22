@@ -19,6 +19,7 @@ After running Taylor's knot algorithm 1000 iterations:
 # Libraries Used:
 * MMDB, a macromolecular coordinate library
 * openCascade
+* cxxopts 2.2.0 (https://github.com/jarro2783/cxxopts)
 
 # Acknowledgment:
 Molecular graphics and analyses performed with UCSF Chimera, developed by the Resource for Biocomputing, Visualization, and Informatics at the University of California, San Francisco, with support from NIH P41-GM103311.
